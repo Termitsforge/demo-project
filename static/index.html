@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Угадай животное</title>
+</head>
+
+<body>
+    <div class="box">
+        <div class="main__box" style="display: block;">
+            <h1 id="text"></h1>
+            <div class="buttons">
+                <button id="right"></button>
+                <button id="left"></button>
+            </div>
+        </div>
+        <div class="addNewAnimal" style="display: none;">
+            <h1 class="add__h1"></h1>
+            <input type="text" placeholder="Название животного">
+            <input type="text" placeholder="Вопрос который отличит твоё животное от загаданного">
+            <br>
+            <input type="radio" name="answer" value="true"> Да
+            <input type="radio" name="answer"> Нет
+            <br>
+            <div class="add__buttons">
+                <button class="AddAnimal">Добавить животного</button>
+                <button class="To__start">На старт</button>
+            </div>
+
+        </div>
+        <div class="add__only__animal" style="display: none;">
+            <h1 class="add__only__h1"></h1>
+            <input type="text" placeholder="Название животного">
+            <br>
+            <button class="Add__Animal">Добавить животного</button>
+            <button class="To__start">На старт</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
