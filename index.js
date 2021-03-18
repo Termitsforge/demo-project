@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.post('/server', function(req, res){  
     //now req.body will be populated with the object you sent
-    console.log(req.body.name); //prints john
+    //console.log(req.body.name); //prints john
     res.send();
     });
 // connection.connect((err) => {
@@ -27,11 +27,11 @@ app.post('/server', function(req, res){
 //     else return console.log("Подключение к серверу MySQL успешно установлено");
 // });
 connection.query("SELECT * FROM animal", (err, result, fields) => {
-    console.log(result);
+    //console.log(result);
     for(let i =0; i< result.length; i ++){
         animals.push(result[i]);
     } 
-    console.log(animals);
+    //console.log(animals);
     // console.log(fields);
 });
 
@@ -39,7 +39,7 @@ app.use(express.static(__dirname + "/static"));
 
 app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'static', 'index.html'));
-    console.log(req);
+    //console.log(req);
 });
 app.get('/getAnimals', (req, res) => {
     res.send(animals);
