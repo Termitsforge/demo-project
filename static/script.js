@@ -1,25 +1,67 @@
-// let xhr = new XMLHttpRequest();
-// xhr.open(
-//     'GET',
-//     'http://localhost:3000/getAnimals',
-//     true
-// );
-// xhr.send();
-// xhr.onreadystatechange = function () {
-//     if (xhr.readyState != 4) {
-//         return
-//     }
+let vertex = {},
+    answerNO = {},
+    answerYES = {},
+    text = document.querySelector("#text"),
+    buttons = document.querySelectorAll("button");
 
-//     if (xhr.status === 200) {
-//         let result = JSON.parse(xhr.responseText);
-//         for (let i = 0; i < result.length; i++) {
-//             objectFactoryAnimal(firstLetter(result[i].name));
-//         }
-//     } else {
-//         console.log('err', xhr.responseText);
-//     }
-// }
 
+let xhrVertex = new XMLHttpRequest();
+xhrVertex.open(
+    'GET',
+    'http://localhost:3000/getVertex',
+    true
+);
+xhrVertex.send();
+xhrVertex.onreadystatechange = function () {
+    if (xhrVertex.readyState != 4) {
+        return
+    }
+    if (xhrVertex.status === 200) {
+        let result = JSON.parse(xhrVertex.responseText);
+        vertex = result;
+        console.log(result);
+    } else {
+        console.log('err', xhrVertex.responseText);
+    }
+};
+let xhrAnswerYES = new XMLHttpRequest();
+xhrAnswerYES.open(
+    'GET',
+    'http://localhost:3000/getAnswerYES',
+    true
+);
+xhrAnswerYES.send();
+xhrAnswerYES.onreadystatechange = function () {
+    if (xhrAnswerYES.readyState != 4) {
+        return
+    }
+    if (xhrAnswerYES.status === 200) {
+        let result = JSON.parse(xhrAnswerYES.responseText);
+        answerYES = result;
+        console.log(result);
+    } else {
+        console.log('err', xhrAnswerYES.responseText);
+    }
+};
+let xhrAnswerNO = new XMLHttpRequest();
+xhrAnswerNO.open(
+    'GET',
+    'http://localhost:3000/getAnswerNO',
+    true
+);
+xhrAnswerNO.send();
+xhrAnswerNO.onreadystatechange = function () {
+    if (xhrAnswerNO.readyState != 4) {
+        return
+    }
+    if (xhrAnswerNO.status === 200) {
+        let result = JSON.parse(xhrAnswerNO.responseText);
+        answerNO = result;
+        console.log(result);
+    } else {
+        console.log('err', xhrAnswerNO.responseText);
+    }
+};
 function printLine(text, HTMLobject) {
     let count = 0;
     let result = '';
@@ -41,44 +83,6 @@ function printLine(text, HTMLobject) {
     }
     typeLine();
 
-}
-
-let text = document.querySelector("#text"),
-    buttons = document.querySelectorAll("button");
-
-let vertex = {
-    1: "Кот",
-    2: "Он мяукает",
-    3: "Собака",
-    4: "У него большие зубы",
-    5: "Волк",
-    6: "У него большие лапы",
-    7: "Медведь",
-    8: "Он живет в Африке",
-    9: "Бегемот"
-}
-
-let answerYES = {
-    1: null,
-    2: 1,
-    3: null,
-    4: 8,
-    5: null,
-    6: 7,
-    7: null,
-    8: 9,
-    9: null
-}
-let answerNO = {
-    1: null,
-    2: 4,
-    3: null,
-    4: 6,
-    5: null,
-    6: 3,
-    7: null,
-    8: 5,
-    9: null
 }
 let count = 0;
 const firstLetter = (string) => {
@@ -123,37 +127,40 @@ const AddNewAnimal = () => {
     buttons[2].onclick = function () {
         if (!(inputsText[0].value === "") && !(inputsText[1].value === "")) {
             if (checkName(inputsText[0].value)) {
+                /*Добавление нового животного и вопроса */
                 vertex[Object.keys(vertex).length + 1] = firstLetter(inputsText[1].value);
                 vertex[Object.keys(vertex).length + 1] = firstLetter(inputsText[0].value);
+
                 if (radioButtuns[0].checked) {
+                    /*Добавление и изменение значений ответов */
                     answerYES[Object.keys(vertex).length - 1] = Object.keys(vertex).length;
                     answerNO[Object.keys(vertex).length - 1] = count;
-                    if(Object.values(answerYES).indexOf(count) !== -1 ){
+                    if (Object.values(answerYES).indexOf(count) !== -1) {
                         let indexValues = Object.values(answerYES).indexOf(count);
                         let key = Object.keys(answerYES)[indexValues];
                         answerYES[key] = Object.keys(vertex).length - 1;
-                    }else{
+                    } else {
                         let indexValues = Object.values(answerNO).indexOf(count);
                         let key = Object.keys(answerNO)[indexValues];
                         answerNO[key] = Object.keys(vertex).length - 1;
                     }
                     radioButtuns[0].checked = false;
                 } else {
+                    /*Добавление и изменение значений ответов */
                     answerYES[Object.keys(vertex).length - 1] = count;
                     answerNO[Object.keys(vertex).length - 1] = Object.keys(vertex).length;
-                    if(Object.values(answerYES).indexOf(count) !== -1 ){
+                    if (Object.values(answerYES).indexOf(count) !== -1) {
                         let indexValues = Object.values(answerYES).indexOf(count);
                         let key = Object.keys(answerYES)[indexValues];
                         answerYES[key] = count;
-                    }else{
+                    } else {
                         let indexValues = Object.values(answerNO).indexOf(count);
                         let key = Object.keys(answerNO)[indexValues];
                         answerNO[key] = count;
                     }
                     radioButtuns[1].checked = false;
-
                 }
-                
+                /*Выставление у животных null */
                 answerNO[Object.keys(vertex).length] = null;
                 answerYES[Object.keys(vertex).length] = null;
                 inputsText[0].value = "";

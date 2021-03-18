@@ -7,42 +7,51 @@ const __dirname = path.resolve();
 const PORT = 3000;
 const app = express();
 
-let animals = [];
+let vertex = {};
+let answerYES = {};
+let answerNO = {};
 
 const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
-    database: "animals",
+    database: "animals_job",
     password: "root"
 });
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 app.use(bodyParser.json());
-app.post('/server', function(req, res){  
-    //now req.body will be populated with the object you sent
-    //console.log(req.body.name); //prints john
+app.post('/server', function (req, res) {
     res.send();
-    });
-// connection.connect((err) => {
-//     if (err) return console.error(err.message);
-//     else return console.log("Подключение к серверу MySQL успешно установлено");
-// });
-connection.query("SELECT * FROM animal", (err, result, fields) => {
-    //console.log(result);
-    for(let i =0; i< result.length; i ++){
-        animals.push(result[i]);
-    } 
-    //console.log(animals);
-    // console.log(fields);
 });
-
+connection.query("SELECT * FROM vertex", (err, result, fields) => {
+    for (let i = 0; i < result.length; i++) {
+        vertex[result[i].ID] = result[i].name;
+    }
+});
+connection.query("SELECT * FROM answerYes", (err, result, fields) => {
+    for (let i = 0; i < result.length; i++) {
+        answerYES[result[i].IDstart] = result[i].IDnext;
+    }
+});
+connection.query("SELECT * FROM answerNo", (err, result, fields) => {
+    for (let i = 0; i < result.length; i++) {
+        answerNO[result[i].IDstart] = result[i].IDnext;
+    }
+});
 app.use(express.static(__dirname + "/static"));
 
 app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'static', 'index.html'));
-    //console.log(req);
 });
-app.get('/getAnimals', (req, res) => {
-    res.send(animals);
+app.get('/getVertex', (req, res) => {
+    res.send(vertex);
+});
+app.get('/getAnswerYES', (req, res) => {
+    res.send(answerYES);
+});
+app.get('/getAnswerNO', (req, res) => {
+    res.send(answerNO);
 });
 
 app.listen(PORT, () => {
