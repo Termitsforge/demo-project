@@ -22,6 +22,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.post('/server', function (req, res) {
+    console.log(req);
     res.send();
 });
 connection.query("SELECT * FROM vertex", (err, result, fields) => {

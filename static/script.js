@@ -4,6 +4,39 @@ let vertex = {},
     text = document.querySelector("#text"),
     buttons = document.querySelectorAll("button");
 
+vertex = {
+    1: "Кот",
+    2: "Он мяукает",
+    3: "Собака",
+    4: "У него большие зубы",
+    5: "Волк",
+    6: "У него большие лапы",
+    7: "Медведь",
+    8: "Он живет в Африке",
+    9: "Бегемот"
+};
+
+answerYES = {
+    1:null,
+    2:1,
+    3:null,
+    4:8,
+    5:null,
+    6:7,
+    8:9,
+    9:null
+};
+
+answerNO = {
+    1:null,
+    2:4,
+    3:null,
+    4:6,
+    5:null,
+    6:3,
+    8:5,
+    9:null
+};
 
 let xhrVertex = new XMLHttpRequest();
 xhrVertex.open(
@@ -62,6 +95,7 @@ xhrAnswerNO.onreadystatechange = function () {
         console.log('err', xhrAnswerNO.responseText);
     }
 };
+
 function printLine(text, HTMLobject) {
     let count = 0;
     let result = '';
