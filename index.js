@@ -8,51 +8,64 @@ const PORT = 3000;
 const app = express();
 
 let vertex = {};
-let answerYES = {};
-let answerNO = {};
+
 
 const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
-    database: "animals_job",
+    database: "animals",
     password: "root"
 });
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
-app.post('/server', function (req, res) {
-    console.log(req);
+
+app.post('/serverUPDATE', function (req, res) {
+    console.log(req.body);
+    if (req.body.boolAnswer) {
+        connection.query("UPDATE vertex SET answerYes = ? WHERE ID = ?;", [req.body.update, req.body.ID], (err, result, fields) => {
+            if (err) {
+                console.log(err);
+            }
+        })
+    } else {
+        connection.query("UPDATE vertex SET answerNo = ? WHERE ID = ?;", [req.body.update, req.body.ID], (err, result, fields) => {
+            if (err) {
+                console.log(err);
+            }
+        });
+    }
     res.send();
 });
-connection.query("SELECT * FROM vertex", (err, result, fields) => {
-    for (let i = 0; i < result.length; i++) {
-        vertex[result[i].ID] = result[i].name;
-    }
+app.post('/serverINSERT', function (req, res) {
+    console.log(req.body);
+    connection.query("INSERT INTO vertex(ID, name, answerYes, answerNo) VALUES (?,?,?,?);", [req.body.ID, req.body.name, req.body.answerYes, req.body.answerNo], (err, result, fields) => {
+        if (err) {
+            console.log(err);
+        }
+    });
+    res.send();
 });
-connection.query("SELECT * FROM answerYes", (err, result, fields) => {
-    for (let i = 0; i < result.length; i++) {
-        answerYES[result[i].IDstart] = result[i].IDnext;
-    }
-});
-connection.query("SELECT * FROM answerNo", (err, result, fields) => {
-    for (let i = 0; i < result.length; i++) {
-        answerNO[result[i].IDstart] = result[i].IDnext;
-    }
-});
+
+
+
 app.use(express.static(__dirname + "/static"));
 
 app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'static', 'index.html'));
 });
 app.get('/getVertex', (req, res) => {
-    res.send(vertex);
-});
-app.get('/getAnswerYES', (req, res) => {
-    res.send(answerYES);
-});
-app.get('/getAnswerNO', (req, res) => {
-    res.send(answerNO);
+    connection.query("SELECT * FROM vertex", (err, result, fields) => {
+        if(err) {
+            console.log(err);
+        }
+        for (let i = 0; i < result.length; i++) {
+            vertex[result[i].ID] = [result[i].name, result[i].answerYes, result[i].answerNo];
+        }
+        console.log(vertex);
+        res.send(vertex);
+    });
 });
 
 app.listen(PORT, () => {

@@ -3,75 +3,39 @@ let vertex = {},
     buttons = document.querySelectorAll("button"),
     count = 0;
 
-vertex = {
-    1: ["Кот", null, null],
-    2: ["Он мяукает", 1, 4],
-    3: ["Собака", null, null],
-    4: ["У него большие зубы", 8, 6],
-    5: ["Волк", null, null],
-    6: ["У него большие лапы", 7, 3],
-    7: ["Медведь", null, null],
-    8: ["Он живет в Африке", 9, 5],
-    9: ["Бегемот", null, null]
-};
-// let xhrVertex = new XMLHttpRequest();
-// xhrVertex.open(
-//     'GET',
-//     'http://localhost:3000/getVertex',
-//     true
-// );
-// xhrVertex.send();
-// xhrVertex.onreadystatechange = function () {
-//     if (xhrVertex.readyState != 4) {
-//         return
-//     }
-//     if (xhrVertex.status === 200) {
-//         let result = JSON.parse(xhrVertex.responseText);
-//         vertex = result;
-//         console.log(result);
-//     } else {
-//         console.log('err', xhrVertex.responseText);
-//     }
-// };
-// let xhrAnswerYES = new XMLHttpRequest();
-// xhrAnswerYES.open(
-//     'GET',
-//     'http://localhost:3000/getAnswerYES',
-//     true
-// );
-// xhrAnswerYES.send();
-// xhrAnswerYES.onreadystatechange = function () {
-//     if (xhrAnswerYES.readyState != 4) {
-//         return
-//     }
-//     if (xhrAnswerYES.status === 200) {
-//         let result = JSON.parse(xhrAnswerYES.responseText);
-//         answerYES = result;
-//         console.log(result);
-//     } else {
-//         console.log('err', xhrAnswerYES.responseText);
-//     }
-// };
-// let xhrAnswerNO = new XMLHttpRequest();
-// xhrAnswerNO.open(
-//     'GET',
-//     'http://localhost:3000/getAnswerNO',
-//     true
-// );
-// xhrAnswerNO.send();
-// xhrAnswerNO.onreadystatechange = function () {
-//     if (xhrAnswerNO.readyState != 4) {
-//         return
-//     }
-//     if (xhrAnswerNO.status === 200) {
-//         let result = JSON.parse(xhrAnswerNO.responseText);
-//         answerNO = result;
-//         console.log(result);
-//     } else {
-//         console.log('err', xhrAnswerNO.responseText);
-//     }
-// };
+// vertex = {
 
+//     1: ["Кот", null, null],
+//     2: ["Он мяукает", 1, 4],
+//     3: ["Собака", null, null],
+//     4: ["У него большие зубы", 8, 6],
+//     5: ["Волк", null, null],
+//     6: ["У него большие лапы", 7, 3],
+//     7: ["Медведь", null, null],
+//     8: ["Он живет в Африке", 9, 5],
+//     9: ["Бегемот", null, null]
+// };
+/*Получение данных из БД*/
+let xhrVertex = new XMLHttpRequest();
+xhrVertex.open(
+    'GET',
+    'http://localhost:3000/getVertex',
+    true
+);
+xhrVertex.send();
+xhrVertex.onreadystatechange = function () {
+    if (xhrVertex.readyState != 4) {
+        return
+    }
+    if (xhrVertex.status === 200) {
+        let result = JSON.parse(xhrVertex.responseText);
+        vertex = result;
+    } else {
+        console.log('err', xhrVertex.responseText);
+    }
+};
+
+/*Функция печати*/
 function printLine(text, HTMLobject) {
     let count = 0;
     let result = '';
@@ -94,10 +58,12 @@ function printLine(text, HTMLobject) {
     typeLine();
 
 }
+/*Функция преобразования строки в нормальный вид*/
 const firstLetter = (string) => {
     let str = string.toLowerCase();
     return str[0].toUpperCase() + str.slice(1);
 };
+/*Проверка на одиннаковое имя*/
 const checkName = (strName) => {
     let arrayNames = [];
     for (let i = 1; i < Object.keys(vertex).length; i++) {
@@ -147,10 +113,12 @@ const AddNewAnimal = () => {
                 for (let i = 1; i < Object.keys(vertex).length; i++) {
                     if (vertex[i][1] === count) {
                         vertex[i][1] = Object.keys(vertex).length - 1;
+                        xhrUPDATE(i, Object.keys(vertex).length - 1, true);
                         break;
                     }
                     if (vertex[i][2] === count) {
                         vertex[i][2] = Object.keys(vertex).length - 1;
+                        xhrUPDATE(i, Object.keys(vertex).length - 1, false);
                         break;
                     }
                 }
@@ -166,7 +134,9 @@ const AddNewAnimal = () => {
 
                     radioButtuns[1].checked = false;
                 }
-                inputsText[0].value = "";
+                
+                xhrINSERT(Object.keys(vertex).length- 1, vertex[Object.keys(vertex).length- 1][0], vertex[Object.keys(vertex).length- 1][1], vertex[Object.keys(vertex).length- 1][2]);
+                xhrINSERT(Object.keys(vertex).length, vertex[Object.keys(vertex).length][0], vertex[Object.keys(vertex).length][1], vertex[Object.keys(vertex).length][2]);
                 inputsText[1].value = "";
                 mainBox.style.display = "block";
                 addAnimalBox.style.display = "none";
@@ -190,12 +160,14 @@ const AddNewAnimal = () => {
     };
 
 };
+/*Проверка объекта на пустоту*/
 const isEmpty = (obj) => {
     for (let key in obj) {
         return false;
     }
     return true;
-}
+};
+/*Добавление первого животного*/
 const addOnlyAnimal = () => {
     let mainBox = document.querySelector(".main__box"),
         addAnimalBox = document.querySelector(".addNewAnimal"),
@@ -214,7 +186,7 @@ const addOnlyAnimal = () => {
             vertex[Object.keys(vertex).length][0] = inputsText[4].value;
             vertex[Object.keys(vertex).length][1] = null;
             vertex[Object.keys(vertex).length][2] = null;
-
+            xhrINSERT(Object.keys(vertex).length, inputsText[4].value, null, null);
             inputsText[4].value = "";
             mainBox.style.display = "block";
             addAnimalBox.style.display = "none";
@@ -317,4 +289,41 @@ const question = () => {
     //     }
     // }
 };
+/*Функция xhr запроса на добавление данных в БД */
+const xhrINSERT = (ID, name, answerYes, answerNo) => {
+    let xhrPOST = new XMLHttpRequest();
+    let send = {
+        "ID": ID,
+        "name": firstLetter(name),
+        "answerYes": answerYes,
+        "answerNo": answerNo
+    };
+    let sendString = JSON.stringify(send);
+    xhrPOST.open(
+        'POST',
+        'http://localhost:3000/serverINSERT',
+        true
+    );
+    xhrPOST.setRequestHeader("Content-Type", "application/json");
+    xhrPOST.send(sendString);
+};
+/*Функция xhr запроса на изменение данных в БД */
+const xhrUPDATE = (ID, update, boolAnswer) =>{
+    let xhrPOST = new XMLHttpRequest();
+    let send = {
+        "ID": ID,
+        "update": update,
+        "boolAnswer":boolAnswer
+    };
+    let sendString = JSON.stringify(send);
+    xhrPOST.open(
+        'POST',
+        'http://localhost:3000/serverUPDATE',
+        true
+    );
+    xhrPOST.setRequestHeader("Content-Type", "application/json");
+    xhrPOST.send(sendString);
+};
+
+
 start();
