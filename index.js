@@ -7,7 +7,7 @@ const __dirname = path.resolve();
 const PORT = 3000;
 const app = express();
 
-let vertex = {};
+let vertex = [];
 
 
 const connection = mysql.createConnection({
@@ -28,7 +28,7 @@ app.post('/serverUPDATE', function (req, res) {
             if (err) {
                 console.log(err);
             }
-        })
+        });
     } else {
         connection.query("UPDATE vertex SET answerNo = ? WHERE ID = ?;", [req.body.update, req.body.ID], (err, result, fields) => {
             if (err) {
@@ -47,8 +47,15 @@ app.post('/serverINSERT', function (req, res) {
     });
     res.send();
 });
-
-
+app.post('/serverTRUNCATE', function (req, res) {
+    console.log(req.body);
+    connection.query("TRUNCATE TABLE vertex;", (err, result, fields) => {
+        if (err) {
+            console.log(err);
+        }
+    });
+    res.send();
+});
 
 app.use(express.static(__dirname + "/static"));
 
@@ -61,9 +68,13 @@ app.get('/getVertex', (req, res) => {
             console.log(err);
         }
         for (let i = 0; i < result.length; i++) {
-            vertex[result[i].ID] = [result[i].name, result[i].answerYes, result[i].answerNo];
+            vertex[result[i].ID] = {
+                name : result[i].name,
+                answerYes: result[i].answerYes, 
+                answerNo : result[i].answerNo
+            };
         }
-        console.log(vertex);
+        //console.log(vertex);
         res.send(vertex);
     });
 });

@@ -1,20 +1,20 @@
-let vertex = {},
+let vertices = [],
     text = document.querySelector("#text"),
     buttons = document.querySelectorAll("button"),
     count = 0;
 
-// vertex = {
+// vertices = [
+//     {name: "Кот"},
+//     {name: "Он мяукает", answerYes: 1,	answerNo: 4},
+//     {name: "Собака"},
+//     {name: "У него большие зубы", answerYes: 8, answerNo: 6},
+//     {name: "Волк"},
+//     {name: "У него большие лапы", answerYes: 7,	answerNo: 3},
+//     {name: "Медведь"},
+//     {name: "Он живет в Африке", answerYes: 9, answerNo: 5},
+//     {name: "Бегемот"}
+// ];
 
-//     1: ["Кот", null, null],
-//     2: ["Он мяукает", 1, 4],
-//     3: ["Собака", null, null],
-//     4: ["У него большие зубы", 8, 6],
-//     5: ["Волк", null, null],
-//     6: ["У него большие лапы", 7, 3],
-//     7: ["Медведь", null, null],
-//     8: ["Он живет в Африке", 9, 5],
-//     9: ["Бегемот", null, null]
-// };
 /*Получение данных из БД*/
 let xhrVertex = new XMLHttpRequest();
 xhrVertex.open(
@@ -29,7 +29,7 @@ xhrVertex.onreadystatechange = function () {
     }
     if (xhrVertex.status === 200) {
         let result = JSON.parse(xhrVertex.responseText);
-        vertex = result;
+        vertices = result;
     } else {
         console.log('err', xhrVertex.responseText);
     }
@@ -66,8 +66,8 @@ const firstLetter = (string) => {
 /*Проверка на одиннаковое имя*/
 const checkName = (strName) => {
     let arrayNames = [];
-    for (let i = 1; i < Object.keys(vertex).length; i++) {
-        arrayNames.push(vertex[i][0]);
+    for (let i = 1; i < vertices.length; i++) {
+        arrayNames.push(vertices[i].name);
     }
     if (arrayNames.indexOf(strName) === -1) return true;
     else return false;
@@ -84,7 +84,8 @@ const start = () => {
     };
     buttons[1].onclick = function () {
         if (confirm("Вы серьёзно ? ")) {
-            vertex = {};
+            vertices = [];
+            xhrTRUNCATE();
             alert("Все животные удалены");
         }
     };
@@ -104,39 +105,39 @@ const AddNewAnimal = () => {
         if (!(inputsText[0].value === "") && !(inputsText[1].value === "")) {
             if (checkName(inputsText[0].value)) {
                 /*Добавление нового животного и вопроса */
-                vertex[Object.keys(vertex).length + 1] = [];
-                vertex[Object.keys(vertex).length][0] = inputsText[1].value;
-                vertex[Object.keys(vertex).length + 1] = [];
-                vertex[Object.keys(vertex).length][0] = inputsText[0].value;
-                vertex[Object.keys(vertex).length][1] = null;
-                vertex[Object.keys(vertex).length][2] = null;
-                for (let i = 1; i < Object.keys(vertex).length; i++) {
-                    if (vertex[i][1] === count) {
-                        vertex[i][1] = Object.keys(vertex).length - 1;
-                        xhrUPDATE(i, Object.keys(vertex).length - 1, true);
+                vertices[vertices.length] = {};
+                vertices[vertices.length - 1].name = inputsText[1].value;
+                vertices[vertices.length] = {};
+                vertices[vertices.length - 1].name = inputsText[0].value;
+                vertices[vertices.length - 1].answerYes = null;
+                vertices[vertices.length - 1].answerNo = null;
+                for (let i = 1; i < vertices.length; i++) {
+                    if (vertices[i].answerYes === count) {
+                        vertices[i].answerYes = vertices.length - 2;
+                        xhrUPDATE(i, vertices.length - 2, true);
                         break;
                     }
-                    if (vertex[i][2] === count) {
-                        vertex[i][2] = Object.keys(vertex).length - 1;
-                        xhrUPDATE(i, Object.keys(vertex).length - 1, false);
+                    if (vertices[i].answerNo === count) {
+                        vertices[i].answerNo = vertices.length - 2;
+                        xhrUPDATE(i, vertices.length - 2, false);
                         break;
                     }
                 }
                 if (radioButtuns[0].checked) {
                     /*Добавление и изменение значений ответов если ответ да*/
-                    vertex[Object.keys(vertex).length - 1][1] = Object.keys(vertex).length;
-                    vertex[Object.keys(vertex).length - 1][2] = count;
+                    vertices[vertices.length - 2].answerYes = vertices.length - 1;
+                    vertices[vertices.length - 2].answerNo = count;
                     radioButtuns[0].checked = false;
                 } else {
                     /*Добавление и изменение значений ответов если ответ нет*/
-                    vertex[Object.keys(vertex).length - 1][1] = count;
-                    vertex[Object.keys(vertex).length - 1][2] = Object.keys(vertex).length;
+                    vertices[vertices.length - 2].answerYes = count;
+                    vertices[vertices.length - 2].answerNo = vertices.length - 1;
 
                     radioButtuns[1].checked = false;
                 }
-                
-                xhrINSERT(Object.keys(vertex).length- 1, vertex[Object.keys(vertex).length- 1][0], vertex[Object.keys(vertex).length- 1][1], vertex[Object.keys(vertex).length- 1][2]);
-                xhrINSERT(Object.keys(vertex).length, vertex[Object.keys(vertex).length][0], vertex[Object.keys(vertex).length][1], vertex[Object.keys(vertex).length][2]);
+                xhrINSERT(vertices.length - 2, vertices[vertices.length - 2].name, vertices[vertices.length - 2].answerYes, vertices[vertices.length - 2].answerNo);
+                xhrINSERT(vertices.length - 1, vertices[vertices.length - 1].name, vertices[vertices.length - 1].answerYes, vertices[vertices.length - 1].answerNo);
+                inputsText[0].value = "";
                 inputsText[1].value = "";
                 mainBox.style.display = "block";
                 addAnimalBox.style.display = "none";
@@ -161,12 +162,10 @@ const AddNewAnimal = () => {
 
 };
 /*Проверка объекта на пустоту*/
-const isEmpty = (obj) => {
-    for (let key in obj) {
-        return false;
-    }
-    return true;
-};
+// const isEmpty = (obj) => {
+//     if (vertices === []) return true;
+//     else return false;
+// };
 /*Добавление первого животного*/
 const addOnlyAnimal = () => {
     let mainBox = document.querySelector(".main__box"),
@@ -182,11 +181,11 @@ const addOnlyAnimal = () => {
     printLine("Расскажи о животном ", addText);
     buttons[4].onclick = function () {
         if (!(inputsText[4].value === "")) {
-            vertex[Object.keys(vertex).length + 1] = [];
-            vertex[Object.keys(vertex).length][0] = inputsText[4].value;
-            vertex[Object.keys(vertex).length][1] = null;
-            vertex[Object.keys(vertex).length][2] = null;
-            xhrINSERT(Object.keys(vertex).length, inputsText[4].value, null, null);
+            vertices[vertices.length + 1] = {};
+            vertices[vertices.length - 1].name = inputsText[4].value;
+            vertices[vertices.length - 1].answerYes = null;
+            vertices[vertices.length - 1].answerNo = null;
+            xhrINSERT(vertices.length - 1, inputsText[4].value, null, null);
             inputsText[4].value = "";
             mainBox.style.display = "block";
             addAnimalBox.style.display = "none";
@@ -220,7 +219,7 @@ const question = () => {
         };
     }
 
-    if (isEmpty(vertex)) {
+    if (vertices.length === 0) {
         printLine("Я не знаю ни одного животного. Расскажи)", text);
         buttons[0].textContent = "Слушай";
         buttons[1].textContent = "Пока";
@@ -230,21 +229,21 @@ const question = () => {
         buttons[1].onclick = function () {
             start();
         }
-    } else if (vertex[count] === undefined) {
-        printCorrectAnswer(vertex[1][0]);
+    } else if (vertices[count] === undefined) {
+        printCorrectAnswer(vertices[1].name);
         count = 1;
     } else {
-        if (vertex[count][1] === null) printCorrectAnswer(vertex[count][0]);
+        if (vertices[count].answerYes === null) printCorrectAnswer(vertices[count].name);
         else {
-            printLine(`${vertex[count][0]} ?`, text);
+            printLine(`${vertices[count].name} ?`, text);
             buttons[0].textContent = "Да";
             buttons[1].textContent = "Нет";
             buttons[0].onclick = function () {
-                count = vertex[count][1];
+                count = vertices[count].answerYes;
                 question();
             };
             buttons[1].onclick = function () {
-                count = vertex[count][2];
+                count = vertices[count].answerNo;
                 question();
             };
 
@@ -308,12 +307,12 @@ const xhrINSERT = (ID, name, answerYes, answerNo) => {
     xhrPOST.send(sendString);
 };
 /*Функция xhr запроса на изменение данных в БД */
-const xhrUPDATE = (ID, update, boolAnswer) =>{
+const xhrUPDATE = (ID, update, boolAnswer) => {
     let xhrPOST = new XMLHttpRequest();
     let send = {
         "ID": ID,
         "update": update,
-        "boolAnswer":boolAnswer
+        "boolAnswer": boolAnswer
     };
     let sendString = JSON.stringify(send);
     xhrPOST.open(
@@ -324,6 +323,18 @@ const xhrUPDATE = (ID, update, boolAnswer) =>{
     xhrPOST.setRequestHeader("Content-Type", "application/json");
     xhrPOST.send(sendString);
 };
+/*Функция очищения таблицы в БД */
+const xhrTRUNCATE = () => {
+    let xhrPOST = new XMLHttpRequest();
+    
+    xhrPOST.open(
+        'POST',
+        'http://localhost:3000/serverTRUNCATE',
+        true
+    );
+    xhrPOST.send();
+};
+
 
 
 start();
