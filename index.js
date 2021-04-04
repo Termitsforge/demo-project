@@ -7,8 +7,6 @@ const __dirname = path.resolve();
 const PORT = 3000;
 const app = express();
 
-let vertices = [];
-
 
 app.use(bodyParser.urlencoded({
     extended: true
@@ -20,18 +18,19 @@ app.get('/', (req, res) => {
 });
 app.post('/serverSEND', (req, res) =>{
     let data = JSON.stringify(req.body);
+    //fs.writeFileSync('vertices.json', );
     fs.writeFileSync('vertices.json', data);
+    console.log(data);
     res.send();
 });
 app.post('/serverDEL', (req, res) =>{
-    fs.truncate('vertices.json', 0, function(){console.log('done')});
+    fs.writeFileSync('vertices.json', '{}');
     res.send();
 });
-app.post('/getVertices', (req, res) =>{
-    fs.readFile('vertices.json', {encoding: 'utf8'},function(err,data) {
-        vertices = data;
+app.post('/serverGET', (req, res) =>{
+    fs.readFile('vertices.json', {encoding: 'utf8'}, function(err,data) {
+        res.send(data);
     });
-    res.send(vertices);
 });
 
   
