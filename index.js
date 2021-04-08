@@ -16,18 +16,12 @@ app.use(express.static(__dirname + "/static"));
 app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'static', 'index.html'));
 });
-app.post('/serverSEND', (req, res) =>{
+app.put('/vertices', (req, res) =>{
     let data = JSON.stringify(req.body);
-    //fs.writeFileSync('vertices.json', );
     fs.writeFileSync('vertices.json', data);
-    console.log(data);
     res.send();
 });
-app.post('/serverDEL', (req, res) =>{
-    fs.writeFileSync('vertices.json', '{}');
-    res.send();
-});
-app.post('/serverGET', (req, res) =>{
+app.get('/vertices', (req, res) =>{
     fs.readFile('vertices.json', {encoding: 'utf8'}, function(err,data) {
         res.send(data);
     });

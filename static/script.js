@@ -50,7 +50,9 @@ const start = () => {
     };
     buttons[1].onclick = function () {
         if (confirm("Вы серьёзно ? ")) {
-            xhrDELETE();
+            mainVertex = {};
+            dopVertex = {};
+            xhrSEND();
             xhrGET();
             alert("Все животные удалены");
         }
@@ -192,30 +194,30 @@ const xhrSEND = () => {
     let xhrPOST = new XMLHttpRequest();
     let sendString = JSON.stringify(dopVertex);
     xhrPOST.open(
-        'POST',
-        'http://localhost:3000/serverSEND',
+        'PUT',
+        'http://localhost:3000/vertices',
         true
     );
     xhrPOST.setRequestHeader("Content-Type", "application/json");
     xhrPOST.send(sendString);
 };
 /*Удаление данных из файла */
-const xhrDELETE = () => {
-    let xhrPOST = new XMLHttpRequest();
-    xhrPOST.open(
-        'POST',
-        'http://localhost:3000/serverDEL',
-        true
-    );
-    xhrPOST.setRequestHeader("Content-Type", "application/json");
-    xhrPOST.send();
-};
+// const xhrDELETE = () => {
+//     let xhrPOST = new XMLHttpRequest();
+//     xhrPOST.open(
+//         'GET',
+//         'http://localhost:3000/serverDEL',
+//         true
+//     );
+//     xhrPOST.setRequestHeader("Content-Type", "application/json");
+//     xhrPOST.send();
+// };
 /*Получение данных с файла */
 const xhrGET = () => {
     let xhrPOST = new XMLHttpRequest();
     xhrPOST.open(
-        'POST',
-        'http://localhost:3000/serverGET',
+        'GET',
+        'http://localhost:3000/vertices',
         true
     );
     xhrPOST.send();
